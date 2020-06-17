@@ -1,7 +1,37 @@
+let map;
+
 $(function(){
     let id= parseId(window.location.search);
     getDetail(id);
+
+    showMap();
+
+    
 });
+
+function showMap(){
+map = new google.maps.Map(document.getElementById('map'), {
+    zoom:12,
+    center: {
+        lat:33.3617,
+        lng:126.5292
+    }   
+});
+}
+
+function showMarker(lat,lng){
+
+    let pos= {
+    lat: lat,
+    lng: lng
+    };
+
+    new google.maps.Marker({
+        position:pos,
+        map:map
+    });
+    map.panTo(pos);
+}
 
 function getDetail(id){
     let url = 'https://javascript-basic.appspot.com/locationDetail';
@@ -21,6 +51,7 @@ function getDetail(id){
             $gallery.append($image);
             console.log($gallery);
         }
+
     $(document).ready(function(){
         $('#detail-images-show').slick({
             dots:true,
@@ -28,6 +59,25 @@ function getDetail(id){
         });
     });
 
+    showMarker(r.position.x, r.position.y);
+
+    $('.btn-register').click(function(){
+        var myTrips = Cookies.getJSON('MYTRIPS');
+        if(!myTrips){
+        myTrips=[];
+        }
+        myTrips.push({
+            id:id,
+            name: r.name,
+            cityName:r.cityName,
+            x: r.position.x,
+            y: r.position.y
+        });
+
+        Cookies.set('MYTRIPS',myTrips);
+
+        alert('여행지가 등록되었습니다!');
+    });
 
     });
     
@@ -47,3 +97,4 @@ function parseId(str){
         return tokens[1];    }
         return null;
 }
+
